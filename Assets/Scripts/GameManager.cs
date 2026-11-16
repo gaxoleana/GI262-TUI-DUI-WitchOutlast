@@ -3,7 +3,36 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private Player player;
+    [SerializeField] private EnemySpawner enemySpawner;
     private bool isRunning;
+    private float elapsedTime;
+    private int killCount;
+
+    public float ElapsedTime
+    {
+        get
+        {
+            return elapsedTime;
+        }
+    }
+
+    public int KillCount
+    {
+        get
+        {
+            return killCount;
+        }
+    }
+
+    private void OnEnable()
+    {
+        Enemy.Killed += RegisterKill;
+    }
+
+    private void OnDisable()
+    {
+        Enemy.Killed -= RegisterKill;
+    }
 
     private void Start()
     {
@@ -12,16 +41,36 @@ public class GameManager : MonoBehaviour
 
     public void StartRun()
     {
+        elapsedTime = 0f;
+        killCount = 0;
+        player.ResetProgression();
         isRunning = true;
         player.SetMovementEnabled(true);
         player.SetWeaponsEnabled(true);
+        enemySpawner.StartSpawning();
     }
 
     private void Update()
     {
-        if (isRunning && player.CurrentHealth <= 0)
+        if (!isRunning)
+        {
+            return;
+        }
+
+        if (player.CurrentHealth <= 0)
         {
             EndRun();
+            return;
+        }
+
+        elapsedTime += Time.deltaTime;
+    }
+
+    private void RegisterKill()
+    {
+        if (isRunning)
+        {
+            killCount++;
         }
     }
 
@@ -33,6 +82,7 @@ public class GameManager : MonoBehaviour
         }
 
         isRunning = false;
+        enemySpawner.StopSpawning();
         player.SetMovementEnabled(false);
         player.SetWeaponsEnabled(false);
 

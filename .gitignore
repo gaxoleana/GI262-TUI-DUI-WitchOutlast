@@ -12,6 +12,10 @@
 /[Uu]ser[Ss]ettings/
 *.log
 
+# Generated system and code guides
+/output/pdf/WitchOutlast_System_Code_Guide_*.pdf
+/output/pdf/WitchOutlast_System_Code_Guide_*.html
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/

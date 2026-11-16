@@ -3,11 +3,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class Enemy : MonoBehaviour
 {
+    public static event System.Action Killed;
+
     [SerializeField] private Transform player;
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private int baseHealth = 100;
     [SerializeField] private int currentHealth = 100;
     [SerializeField] private int baseDamage = 4;
+    [SerializeField] private ExpOrb expOrbPrefab;
 
     public int CurrentHealth
     {
@@ -23,6 +26,11 @@ public abstract class Enemy : MonoBehaviour
     {
         currentHealth = baseHealth;
         enemyBody = GetComponent<Rigidbody2D>();
+    }
+
+    public void Initialize(Transform playerTarget)
+    {
+        player = playerTarget;
     }
 
     protected void ChasePlayer()
@@ -75,6 +83,17 @@ public abstract class Enemy : MonoBehaviour
         if (currentHealth == 0)
         {
             enemyBody.linearVelocity = Vector2.zero;
+
+            if (expOrbPrefab != null)
+            {
+                Instantiate(expOrbPrefab, transform.position, Quaternion.identity);
+            }
+
+            if (Killed != null)
+            {
+                Killed.Invoke();
+            }
+
             Destroy(gameObject);
         }
     }
