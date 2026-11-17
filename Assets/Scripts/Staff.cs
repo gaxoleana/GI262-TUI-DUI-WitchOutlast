@@ -4,6 +4,31 @@ public class Staff : Weapon
 {
     [SerializeField] private Projectile projectilePrefab;
 
+    public int PierceCount
+    {
+        get { return GetPierceCount(WeaponLevel); }
+    }
+
+    public int NextPierceCount
+    {
+        get { return GetPierceCount(Mathf.Min(WeaponLevel + 1, MaxLevel)); }
+    }
+
+    private int GetPierceCount(int level)
+    {
+        if (level >= 8)
+        {
+            return 2;
+        }
+
+        if (level >= 4)
+        {
+            return 1;
+        }
+
+        return 0;
+    }
+
     public override void Attack()
     {
         if (player == null || player.CurrentHealth <= 0 || projectilePrefab == null)
@@ -26,7 +51,7 @@ public class Staff : Weapon
         }
 
         Projectile projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        projectile.Initialize(shootDirection, baseDamage);
+        projectile.Initialize(shootDirection, baseDamage, PierceCount);
     }
 
     private Enemy FindNearestEnemy()

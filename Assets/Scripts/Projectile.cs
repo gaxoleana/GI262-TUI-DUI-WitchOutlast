@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Projectile : MonoBehaviour
@@ -8,7 +9,9 @@ public class Projectile : MonoBehaviour
 
     private Rigidbody2D projectileBody;
     private int damage;
-    private bool hasHit;
+    private bool isFinished;
+    private int remainingPierces;
+    private readonly HashSet<Enemy> hitEnemies = new HashSet<Enemy>();
 
     private void Awake()
     {
@@ -20,16 +23,19 @@ public class Projectile : MonoBehaviour
         Destroy(gameObject, lifeTime);
     }
 
-    public void Initialize(Vector2 direction, int projectileDamage)
+    public void Initialize(Vector2 direction, int projectileDamage, int pierceCount = 0)
     {
         damage = projectileDamage;
+        remainingPierces = Mathf.Max(0, pierceCount);
+        isFinished = false;
+        hitEnemies.Clear();
         Vector2 moveDirection = direction.normalized;
         projectileBody.linearVelocity = moveDirection * moveSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!isActiveAndEnabled || hasHit)
+        if (!isActiveAndEnabled || isFinished)
         {
             return;
         }
@@ -38,22 +44,33 @@ public class Projectile : MonoBehaviour
 
         if (enemy != null)
         {
-            if (enemy.CurrentHealth <= 0)
+            if (enemy.CurrentHealth <= 0 || hitEnemies.Contains(enemy))
             {
                 return;
             }
 
-            hasHit = true;
-            projectileBody.linearVelocity = Vector2.zero;
+            hitEnemies.Add(enemy);
             enemy.TakeDamage(damage);
-            Destroy(gameObject);
+
+            if (remainingPierces > 0)
+            {
+                remainingPierces--;
+                return;
+            }
+
+            Finish();
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Wall"))
         {
-            hasHit = true;
-            projectileBody.linearVelocity = Vector2.zero;
-            Destroy(gameObject);
+            Finish();
         }
+    }
+
+    private void Finish()
+    {
+        isFinished = true;
+        projectileBody.linearVelocity = Vector2.zero;
+        Destroy(gameObject);
     }
 
     private void OnDisable()

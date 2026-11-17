@@ -5,6 +5,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
+    public event System.Action LeveledUp;
+
     /*
     moveSpeed ความเร็วเดิน unit/s
     baseHealth พลังชีวิตเริ่มต้น
@@ -184,6 +186,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void ResetWeapons()
+    {
+        foreach (Weapon weapon in weapons)
+        {
+            if (weapon != null)
+            {
+                weapon.ResetUpgrades();
+            }
+        }
+    }
+
     public void ResetProgression()
     {
         level = 1;
@@ -205,6 +218,11 @@ public class Player : MonoBehaviour
             currentExp -= expRequired;
             level++;
             expRequired += Mathf.Max(0, expIncreasePerLevel);
+
+            if (LeveledUp != null)
+            {
+                LeveledUp.Invoke();
+            }
         }
     }
 

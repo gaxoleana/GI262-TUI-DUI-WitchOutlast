@@ -17,7 +17,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!isSpawning || player == null || player.CurrentHealth <= 0)
+        if (Time.timeScale <= 0f || !isSpawning || player == null || player.CurrentHealth <= 0)
         {
             return;
         }
@@ -44,7 +44,7 @@ public class EnemySpawner : MonoBehaviour
 
     public Enemy SpawnEnemy()
     {
-        if (!isSpawning || player == null || player.CurrentHealth <= 0)
+        if (Time.timeScale <= 0f || !isSpawning || player == null || player.CurrentHealth <= 0)
         {
             return null;
         }
