@@ -5,6 +5,8 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private Enemy enemyPrefab;
     [SerializeField] private Player player;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private EnemyScaling scaling;
     [SerializeField] private Camera gameCamera;
     [SerializeField] private SpriteRenderer floor;
     [SerializeField, Min(0.1f)] private float spawnInterval = 2f;
@@ -49,7 +51,7 @@ public class EnemySpawner : MonoBehaviour
             return null;
         }
 
-        if (enemyPrefab == null || gameCamera == null || floor == null)
+        if (enemyPrefab == null || gameCamera == null || floor == null || gameManager == null || scaling == null)
         {
             return null;
         }
@@ -68,8 +70,12 @@ public class EnemySpawner : MonoBehaviour
             return null;
         }
 
+        float elapsedTime = gameManager.ElapsedTime;
+        int health = scaling.CalculateHealth(enemyPrefab.BaseHealth, elapsedTime);
+        int damage = scaling.CalculateDamage(enemyPrefab.BaseDamage, elapsedTime);
+
         Enemy enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-        enemy.Initialize(player.transform);
+        enemy.Initialize(player.transform, health, damage);
         return enemy;
     }
 

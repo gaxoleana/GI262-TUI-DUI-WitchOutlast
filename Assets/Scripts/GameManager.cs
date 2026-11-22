@@ -57,11 +57,19 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        StartRun();
+        Time.timeScale = 1f;
+        player.SetMovementEnabled(false);
+        player.SetWeaponsEnabled(false);
+        enemySpawner.StopSpawning();
     }
 
     public void StartRun()
     {
+        if (isRunning || player.CurrentHealth <= 0)
+        {
+            return;
+        }
+
         Time.timeScale = 1f;
         isPaused = false;
         elapsedTime = 0f;

@@ -21,16 +21,35 @@ public abstract class Enemy : MonoBehaviour
     }
 
     private Rigidbody2D enemyBody;
+    private int currentDamage;
+
+    public int BaseHealth
+    {
+        get { return baseHealth; }
+    }
+
+    public int BaseDamage
+    {
+        get { return baseDamage; }
+    }
+
+    public int Damage
+    {
+        get { return currentDamage; }
+    }
 
     protected void Awake()
     {
         currentHealth = baseHealth;
+        currentDamage = baseDamage;
         enemyBody = GetComponent<Rigidbody2D>();
     }
 
-    public void Initialize(Transform playerTarget)
+    public void Initialize(Transform playerTarget, int health, int damage)
     {
         player = playerTarget;
+        currentHealth = Mathf.Max(1, health);
+        currentDamage = Mathf.Max(0, damage);
     }
 
     protected void ChasePlayer()
@@ -67,7 +86,7 @@ public abstract class Enemy : MonoBehaviour
 
         if (touchedPlayer != null)
         {
-            touchedPlayer.TakeDamage(baseDamage);
+            touchedPlayer.TakeDamage(currentDamage);
         }
     }
 
